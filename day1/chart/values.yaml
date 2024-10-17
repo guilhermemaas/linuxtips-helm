@@ -1,0 +1,84 @@
+deployments:
+  giropops-senhas:
+    name: "giropops-senhas-helm"
+    image: "linuxtips/giropops-senhas:1.0"
+    replicas: 1
+    ports:
+      - port: 5000
+        targetPort: 5000
+        name: "app"
+        serviceType: "NodePort"
+        nodePort: 32767
+      - port: 8088
+        targetPort: 8088
+        name: "metrics"
+        serviceType: "ClusterIP"
+    labels:
+      app: "giropops-senhas"
+      environment: "dev"
+      inLive: "true"
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+  redis:
+    name: "redis-helm"
+    image: "redis"
+    replicas: 1
+    containerPort: 6379
+    containerName: "redis-helm"
+    labels:
+      app: "redis"
+      environment: "dev"
+      inLive: "true"
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+services:
+  giropops-senhas:
+    ports:
+      - port: 5000
+        targetPort: 5000
+        name: "app"
+        serviceType: "NodePort"
+        nodePort: 32767
+      - port: 8088
+        targetPort: 8088
+        name: "metrics"
+        serviceType: "ClusterIP"
+    labels:
+      app: "giropops-senhas"
+      environment: "dev"
+      inLive: "true"
+  redis:
+    ports:
+      - port: 6379
+        targetPort: 6379
+        name: "service"
+        serviceType: "ClusterIP"
+    labels:
+      app: "redis"
+      environment: "dev"
+      inLive: "true"
+observability:
+  giropops-senhas:
+    logging: 
+      enable: true
+    metrics:
+      enable: true
+      path: true
+    apm:
+      enable: true
+databases:
+  giropops-senhas:
+    mysql:
+      host: "mysql-svc.cluster.local"
+      port: 3306
+      name: "MyDB"
